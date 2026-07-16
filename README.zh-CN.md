@@ -1,4 +1,6 @@
-# WS2812 单键控制器（STC8G1K08A）
+# LongXL LED 开源版（LongXL LED Open Source Version）
+
+*STC8G1K08A 单键 WS2812 / NeoPixel 幻彩控制器固件*
 
 [English](README.md) | **简体中文**
 

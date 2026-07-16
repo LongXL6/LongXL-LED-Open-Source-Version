@@ -43,15 +43,21 @@ normalized. Two verifications back this up:
 
 ## 3. Publish to GitHub — step by step
 
+> **Status:** already done — the repo is live at
+> <https://github.com/LongXL6/LongXL-LED-Open-Source-Version>
+> (initially published as `ws2812-stc8g1k08a`, then renamed; GitHub redirects
+> the old URL automatically). The steps below are kept for reference, e.g. if
+> you ever mirror the repo elsewhere.
+
 The local git repository is already initialized with an initial commit, so
 publishing is just creating the remote and pushing.
 
 ### Option A — with the GitHub CLI (`gh`)
 
 ```sh
-cd ws2812-stc8g1k08a
+cd LongXL-LED-Open-Source-Version
 gh auth login                        # once, if not logged in
-gh repo create ws2812-stc8g1k08a \
+gh repo create LongXL-LED-Open-Source-Version \
     --public \
     --source=. \
     --description "One-button WS2812/NeoPixel controller on a $0.27 STC8G1K08A (8-pin 8051): 7 colors, brightness ramp, EEPROM memory. Keil + SDCC." \
@@ -61,14 +67,14 @@ gh repo create ws2812-stc8g1k08a \
 ### Option B — with the GitHub web UI
 
 1. Go to <https://github.com/new>.
-2. Repository name: `ws2812-stc8g1k08a`. Visibility: **Public**.
+2. Repository name: `LongXL-LED-Open-Source-Version`. Visibility: **Public**.
    Do **not** initialize with a README/.gitignore/license (this repo already
    has them).
 3. Create, then push the existing repo:
 
 ```sh
-cd ws2812-stc8g1k08a
-git remote add origin https://github.com/<YOUR-USER>/ws2812-stc8g1k08a.git
+cd LongXL-LED-Open-Source-Version
+git remote add origin https://github.com/<YOUR-USER>/LongXL-LED-Open-Source-Version.git
 git push -u origin main
 ```
 

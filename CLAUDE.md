@@ -1,4 +1,7 @@
-# ws2812-stc8g1k08a
+# LongXL-LED-Open-Source-Version
+
+Published at https://github.com/LongXL6/LongXL-LED-Open-Source-Version
+(renamed from ws2812-stc8g1k08a; old URLs redirect).
 
 One-button WS2812 LED strip controller firmware for the STC8G1K08A
 (8-pin, 1T 8051). Short press = next of 7 colors; long press = brightness

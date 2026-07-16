@@ -1,4 +1,6 @@
-# WS2812 One-Button Controller for STC8G1K08A
+# LongXL LED Open Source Version
+
+*One-button WS2812 / NeoPixel controller firmware for the STC8G1K08A*
 
 **English** | [简体中文](README.zh-CN.md)
 
