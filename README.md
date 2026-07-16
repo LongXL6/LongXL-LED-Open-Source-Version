@@ -248,6 +248,22 @@ Everything tunable lives in the headers (edit the tree you build):
 
 Prices checked July 2026; treat as indicative.
 
+**Ready-made products — our own, at [longxl.shop](https://longxl.shop)**
+
+This firmware family powers our finished FPV LED products; if you'd rather
+not solder anything, buy one of these:
+
+- **[DeepSpace × LongXL Collaborative PHLUX LED Strip](https://longxl.shop/products/deepspace-x-longxl-collaborative-phlux-led-strip)**
+  — 4 addressable strips (12 LEDs each) plus a single-button controller
+  (3–5 V direct, or 2S–6S via balance plug): one press cycles the same
+  7 colors you see in this repo's `color_tab`. From $3.99 per strip,
+  $14.99 for the full set.
+- **[HGLRC LED LongXL (13 mm)](https://longxl.shop/products/hglrc-led-longxl-13mm)**
+  — ultra-light (0.12 g) 13.3 × 4.3 mm addressable LED modules, 3.3–5.5 V,
+  SH1.0 connectors, 4-pack $7.99. Pairs with the controller above.
+
+Questions about the finished products: **<longxinpeng@longxlshop.com>**.
+
 **The MCU — STC8G1K08A**
 
 - **LCSC (international)**: part
@@ -286,10 +302,10 @@ Prices checked July 2026; treat as indicative.
 **Total BOM for a working controller: well under US $2** (MCU + button +
 resistor + cap) plus the strip.
 
-**Comparable finished products** (if you just want to buy one): the SP002E
-class 3-button inline controller (US $1–5), BTF SP621E family ($6–9), RF-remote
+**Generic third-party controllers** (for comparison): the SP002E class
+3-button inline controller (US $1–5), BTF SP621E family ($6–9), RF-remote
 minis ($8–14), SP108E Wi-Fi ($13–18). None of them offer a true single-button
-interface — that is this project's niche.
+interface — for that, see our PHLUX set at the top of this section.
 
 ## Ideas for extension
 

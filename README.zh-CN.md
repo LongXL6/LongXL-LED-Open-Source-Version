@@ -205,6 +205,20 @@ STC-ISP 设置、同样必须 35.000 MHz。
 
 ## 购买渠道（2026 年 7 月核对，价格仅供参考）
 
+**成品直购 —— 我们自己的产品，见 [longxl.shop](https://longxl.shop)**
+
+本固件家族就运行在我们的 FPV 成品灯具上，不想动烙铁可以直接买：
+
+- **[DeepSpace × LongXL 联名 PHLUX 灯带](https://longxl.shop/products/deepspace-x-longxl-collaborative-phlux-led-strip)**
+  —— 4 条可编址灯带（每条 12 灯）+ 单键控制器（3–5V 直供，或 2S–6S
+  平衡头供电）：一键循环的 7 色与本仓库 `color_tab` 完全一致。
+  单条 $3.99 起，整套 $14.99。
+- **[HGLRC LED LongXL（13mm）](https://longxl.shop/products/hglrc-led-longxl-13mm)**
+  —— 超轻 0.12g 的 13.3 × 4.3mm 可编址灯组，3.3–5.5V，SH1.0 接头，
+  4 只装 $7.99，与上面的控制器配套使用。
+
+成品相关问题请联系：**<longxinpeng@longxlshop.com>**。
+
 **主控 STC8G1K08A**
 
 - **立创商城**（szlcsc.com，编号 C915663，SOP8）约 ¥1–2/片；海外走
@@ -228,9 +242,9 @@ STC-ISP 设置、同样必须 35.000 MHz。
 
 **整机 BOM 成本不到 ¥15**（主控 + 按键 + 阻容），灯带另计。
 
-**同类成品**（只想买现成的）：SP002E 类三键控制器（¥3–15 / US $1–5）、
+**第三方通用控制器**（对比参考）：SP002E 类三键控制器（¥3–15 / US $1–5）、
 BTF SP621E 系列、射频遥控款、SP108E Wi-Fi 款。没有一款是真正单键的 ——
-这正是本项目的差异点。
+想要单键，见本节开头我们的 PHLUX 套装。
 
 ## 扩展方向
 
