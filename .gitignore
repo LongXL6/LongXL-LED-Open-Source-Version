@@ -1,0 +1,31 @@
+# macOS
+.DS_Store
+
+# Keil µVision build artifacts and per-user state
+firmware/keil/output/
+firmware/keil/project/Listings/
+firmware/keil/project/Objects/
+*.uvopt
+*.uvgui
+*.uvgui.*
+*.OBJ
+*.obj
+*.LST
+*.M51
+*.lnp
+*.plg
+*.crf
+*.__i
+*.i
+
+# SDCC build artifacts (prebuilt/ keeps the released .hex files)
+firmware/sdcc/*.rel
+firmware/sdcc/*.ihx
+firmware/sdcc/*.lst
+firmware/sdcc/*.rst
+firmware/sdcc/*.sym
+firmware/sdcc/*.asm
+firmware/sdcc/*.map
+firmware/sdcc/*.mem
+firmware/sdcc/*.lk
+firmware/sdcc/*.hex
