@@ -1,7 +1,8 @@
 # WS2812 One-Button Controller for STC8G1K08A
 
+**English** | [简体中文](README.zh-CN.md)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[中文文档 / Chinese README](README.zh-CN.md)
 
 Firmware for a minimal, one-button WS2812 / NeoPixel LED-strip controller built
 on the **STC8G1K08A** — an 8-pin, 1T-8051 microcontroller that costs about
@@ -12,6 +13,57 @@ internal 35 MHz RC oscillator.
 Interestingly, a true *single-button* addressable-LED controller barely exists
 as a commercial product (the market minimum is 3 buttons, e.g. the SP002E
 class) — which makes this tiny design genuinely useful.
+
+## Quick start — flash it, no toolchain needed
+
+The **latest firmware** is
+[`prebuilt/ws2812_stc8g1k08a_35mhz.hex`](prebuilt/ws2812_stc8g1k08a_35mhz.hex).
+This is the version with **brightness adjustment** (long press) in addition to
+color switching, and it **remembers your settings across power-off**. It is
+built from the sources in this repo and is byte-for-byte reproducible.
+You do not need to install any compiler — just flash it:
+
+**What you need:** a CH340-class USB-to-TTL serial adapter (≈ US $1 /
+a few ¥ on Taobao) and a Windows PC (macOS/Linux alternatives below).
+
+**Steps (text only, no pictures needed):**
+
+1. **Wire 4 lines** between the adapter and the board:
+   - adapter `TXD` → MCU `P3.0` (RxD)
+   - adapter `RXD` → MCU `P3.1` (TxD)
+   - adapter `GND` → `GND`
+   - adapter `5V`  → `VCC` (power the board from the adapter so you can
+     power-cycle it easily)
+2. **Get STC-ISP** (free, official):
+   <https://www.stcmicro.com/rjxz.html> — download, unzip, run
+   `stc-isp-xxx.exe`. No installation required.
+3. In STC-ISP, set **MCU Type** to `STC8G1K08A-8PIN` and select your
+   **COM port** (it appears when the CH340 is plugged in; install the CH340
+   driver if it doesn't).
+4. Click **Open Code File** and choose `ws2812_stc8g1k08a_35mhz.hex`.
+5. Set **"Input IRC frequency" to `35.000` MHz.** This is mandatory — all
+   WS2812 signal timing in this firmware is derived from that exact clock.
+   Leave everything else at defaults (a known-good full settings screenshot
+   is in [docs/images/stc-isp-settings.png](docs/images/stc-isp-settings.png)).
+6. Click **Download/Program**, and *then* **power-cycle the target board**
+   (unplug and replug its power). STC chips only enter the bootloader on a
+   cold boot, so the order is: click first, power on second.
+7. Wait for "Operation successful". Done — short-press the button to change
+   color, hold it to adjust brightness.
+
+**macOS / Linux:** use the open-source
+[`stcgal`](https://github.com/grigorig/stcgal) or
+[`stc8prog`](https://github.com/IOsetting/stc8prog) instead of STC-ISP, e.g.
+`stcgal -P stc8d -t 35000 prebuilt/ws2812_stc8g1k08a_35mhz.hex`
+(`-t 35000` = trim the IRC to 35 MHz — same rule as above).
+
+**Troubleshooting:** if the download never starts, swap TXD/RXD (the most
+common mistake), confirm the CH340 driver is installed, and make sure you
+power-cycle *after* clicking Download.
+
+> Note: with the screenshot's settings, "erase user EEPROM on next download"
+> is checked, so flashing resets the saved color/brightness to defaults.
+> Uncheck it if you want settings to survive re-flashing.
 
 ## Features
 
@@ -39,10 +91,9 @@ class) — which makes this tiny design genuinely useful.
     The SDCC build is **reproducible**: rebuilding from this repo produces a
     hex byte-identical to the shipped one.
 - **Tiny** — SDCC build: 968 bytes of flash (of 8 KB), 150 bytes XRAM.
-  Keil build: ~1.9 KB (it additionally links a float HSV→RGB helper, kept as
+  Keil build: roughly 2–3 KB (it additionally links a float HSV→RGB helper, kept as
   an extension hook for rainbow/gradient effects).
-- **Prebuilt hex files** in [prebuilt/](prebuilt/) — flash and go, no
-  toolchain needed.
+- **Prebuilt, ready-to-flash hex** in [prebuilt/](prebuilt/) (see Quick start).
 
 ## Hardware
 
@@ -124,7 +175,7 @@ This firmware solves it the brute-force-but-reliable way:
 ```
 .
 ├── README.md               ← you are here
-├── README.zh-CN.md         ← Chinese version
+├── README.zh-CN.md         ← Chinese version / 中文文档
 ├── PUBLISHING.md           ← how this repo was organized + how to publish it
 ├── LICENSE                 ← MIT (see note about bundled vendor files)
 ├── docs/
@@ -134,7 +185,7 @@ This firmware solves it the brute-force-but-reliable way:
 │   │   ├── project/        ← µVision project (WS2812_STC8G1K08A.uvproj) + STARTUP.A51
 │   │   └── source/         ← C sources + STC8G.H register header
 │   └── sdcc/               ← free-toolchain port (flat sources + build.sh)
-└── prebuilt/               ← ready-to-flash hex files (35 MHz IRC required)
+└── prebuilt/               ← the latest ready-to-flash hex (35 MHz IRC required)
 ```
 
 The two source trees are deliberately kept separate rather than merged behind
@@ -143,9 +194,9 @@ The two source trees are deliberately kept separate rather than merged behind
 are verified working on hardware. Functional differences are listed
 [below](#keil-vs-sdcc-builds).
 
-## Building
+## Building from source
 
-### Option A — SDCC (free, cross-platform)
+### Option A — SDCC (free, cross-platform; this is what prebuilt/ ships)
 
 ```sh
 # macOS: brew install sdcc     Debian/Ubuntu: sudo apt install sdcc
@@ -162,35 +213,8 @@ cd firmware/sdcc
    "STC8G1K08 Series".
 3. Build (F7). The hex lands in `firmware/keil/output/`.
 
-### Option C — no toolchain
-
-Flash a file from [prebuilt/](prebuilt/) directly:
-
-- `ws2812_stc8g1k08a_sdcc_35mhz.hex` — SDCC build (push-pull data pin,
-  recommended)
-- `ws2812_stc8g1k08a_keil_35mhz.hex` — original Keil build
-
-## Flashing
-
-STC MCUs are programmed over plain UART through a factory bootloader; the only
-hardware you need is a **USB-to-TTL serial adapter** (CH340-class, ~US $1).
-
-1. Wire: adapter TXD → P3.0 (RxD), adapter RXD → P3.1 (TxD), GND → GND,
-   5 V → VCC (target power comes from the adapter or is switched with it).
-2. Run **STC-ISP** (free, Windows; official download:
-   <https://www.stcmicro.com/rjxz.html>). On macOS/Linux, the open-source
-   [`stcgal`](https://github.com/grigorig/stcgal) or
-   [`stc8prog`](https://github.com/IOsetting/stc8prog) also support the STC8G.
-3. Select MCU type **STC8G1K08A-8PIN**, your COM port, and the hex file.
-4. **Set "IRC frequency" to 35.000 MHz.** This is not optional — the WS2812
-   bit timing is derived from it. All other options can match the screenshot:
-   ![STC-ISP settings](docs/images/stc-isp-settings.png)
-5. Click *Download/Program*, **then power-cycle the target board** — the STC
-   bootloader only runs on a cold boot.
-
-> Note: the settings screenshot enables "erase user EEPROM on next download",
-> so flashing resets the saved color/brightness to defaults. Uncheck it if you
-> want settings to survive re-flashing.
+Flashing a self-built hex works exactly like the Quick start — same wiring,
+same STC-ISP settings, same mandatory 35.000 MHz.
 
 ## Configuration
 
@@ -215,7 +239,8 @@ Everything tunable lives in the headers (edit the tree you build):
 | `LedRefresh()` | counted `_nop_()`s in C | inline assembly, fully deterministic |
 | P3.3 drive mode | quasi-bidirectional | **push-pull** (sharper edges, stronger drive) |
 | HSV→RGB helpers | included (`HSVtoRGB`, `SetLedHSVColor`) — unused hooks for effects | omitted (keeps the build under 1 KB) |
-| Flash used | ~1.9 KB | 968 B |
+| Flash used | ~2–3 KB | 968 B |
+| Prebuilt hex in this repo | no (build it yourself) | **yes** — `prebuilt/ws2812_stc8g1k08a_35mhz.hex` |
 
 ## Where to buy
 
@@ -224,7 +249,7 @@ Prices checked July 2026; treat as indicative.
 **The MCU — STC8G1K08A**
 
 - **LCSC (international)**: part
-  [C915663](https://www.lcsc.com/product-detail/C915663.html)
+  [C915663](https://www.lcsc.com/product-detail/STC_STC-Micro-STC8G1K08A-36I-SOP8_C915663.html)
   (STC8G1K08A-36I-SOP8) — ~US $0.27 @ 5 pcs, ~$0.14 @ 5000; DFN8 variant
   C915664. Best source for guaranteed-original parts; also available through
   JLCPCB assembly as an extended part.
@@ -273,6 +298,12 @@ interface — that is this project's niche.
 - Gamma correction table for a more linear perceived ramp.
 - Use P5.4/P5.5 (the remaining free pins) for a second button or a light
   sensor.
+
+## Support & contact
+
+- Found a bug or have a question? Open a GitHub issue.
+- You can also reach us by email: **<longxinpeng@longxlshop.com>** — feedback
+  on the firmware or the hardware is very welcome.
 
 ## License
 

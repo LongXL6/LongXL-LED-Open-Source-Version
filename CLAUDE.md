@@ -12,8 +12,11 @@ ramp; settings persist in on-chip EEPROM.
 - `firmware/sdcc/` — SDCC port, build with `cd firmware/sdcc && ./build.sh`
   (needs `brew install sdcc`). The build is reproducible; the hex must stay
   byte-identical unless code is intentionally changed.
-- `prebuilt/` — flashable hexes. Flashing is done on Windows via STC-ISP with
-  IRC = 35.000 MHz (see docs/images/stc-isp-settings.png).
+- `prebuilt/ws2812_stc8g1k08a_35mhz.hex` — the single flashable hex (SDCC
+  build of the current sources). Flashing is done via STC-ISP (Windows) or
+  stcgal, always with IRC = 35.000 MHz (see docs/images/stc-isp-settings.png).
+  The old Keil-built hex from `output/` was excluded on purpose: its 2025-03-04
+  build log shows it predates the EEPROM/settings-memory feature.
 
 ## Hard constraints
 
