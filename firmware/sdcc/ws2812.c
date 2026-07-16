@@ -16,6 +16,15 @@ static const __code u8 color_tab[COLOR_NUM][3] = {
 	{1,1,1},   /* white */
 };
 
+static const __code u8 bright_tab[RAMP_LEVELS + 1] = {
+	8,8,8,8,8,8,9,9,9,9,10,10,10,11,11,12,12,13,14,14,
+	15,16,17,18,19,20,21,22,23,24,25,27,28,30,31,33,34,36,37,39,
+	41,43,45,47,49,51,53,55,57,59,62,64,67,69,72,74,77,80,83,85,
+	88,91,94,97,101,104,107,110,114,117,121,124,128,132,135,139,143,147,151,155,
+	159,163,168,172,176,181,185,190,194,199,204,209,214,219,224,229,234,239,244,250,255
+};
+static u8 bright_level;
+
 void SetLedColor(u8 ledx, u8 r, u8 g, u8 b)
 {
 	LED_BYTE_Buffer[ledx][0] = g;
@@ -119,17 +128,51 @@ void NextColor(void)
 	ApplyColor();
 }
 
-void RampBright(void)
+void BeginBrightRamp(void)
 {
-	u16 nb = (u16)g_bright + RAMP_STEP;
-	if (nb > MAX_BRIGHT)
-	{
-		nb = MIN_BRIGHT;
-	}
-	if (nb < MIN_BRIGHT)
-	{
-		nb = MIN_BRIGHT;
-	}
-	g_bright = (u8)nb;
+	u8 i;
+	for (i = 0; i < RAMP_LEVELS && bright_tab[i] < g_bright; i++);
+	bright_level = i;
+}
+
+u8 RampBright(u8 up)
+{
+	if (up && bright_level < RAMP_LEVELS) bright_level++;
+	if (!up && bright_level > 0) bright_level--;
+	g_bright = bright_tab[bright_level];
 	ApplyColor();
+	return (up && bright_level >= RAMP_LEVELS) || (!up && bright_level == 0);
+}
+
+void SignalBrightLimit(void)
+{
+	u8 n, i;
+	for (n = 0; n < 2; n++)
+	{
+		for (i = 0; i < 4 && i < LedNum; i++) SetLedColor(i, 0, 0, 0);
+		LedRefresh();
+		delay_ms(100);
+		ApplyColor();
+		delay_ms(100);
+	}
+}
+
+static void Wheel(u8 p, u8 *r, u8 *g, u8 *b)
+{
+	if (p < 85) { *r = 255 - p * 3; *g = p * 3; *b = 0; }
+	else if (p < 170) { p -= 85; *r = 0; *g = 255 - p * 3; *b = p * 3; }
+	else { p -= 170; *r = p * 3; *g = 0; *b = 255 - p * 3; }
+}
+
+void RainbowStep(void)
+{
+	static u8 phase;
+	u8 i, r, g, b;
+	for (i = 0; i < LedNum; i++)
+	{
+		Wheel((u8)(phase + ((u16)i * 256u / LedNum)), &r, &g, &b);
+		SetLedColor(i, r, g, b);
+	}
+	phase++;
+	LedRefresh();
 }

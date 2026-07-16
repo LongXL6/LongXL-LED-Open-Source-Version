@@ -16,10 +16,24 @@ Interestingly, a true *single-button* addressable-LED controller barely exists
 as a commercial product (the market minimum is 3 buttons, e.g. the SP002E
 class) — which makes this tiny design genuinely useful.
 
+## Brightness + rainbow feature build
+
+This fork adds a gamma-corrected two-second brightness sweep with clear minimum
+and maximum feedback: the ramp stops at each limit and the first four LEDs blink
+twice. A new full-brightness animated rainbow is entered with five fast clicks
+and left with four fast clicks (two double-clicks). Holding the button adjusts
+rainbow speed; each new hold reverses between speeding up and slowing down.
+
+The original prebuilt firmware remains available alongside the feature build:
+[`prebuilt/ws2812_stc8g1k08a_35mhz_brightness-rainbow.hex`](prebuilt/ws2812_stc8g1k08a_35mhz_brightness-rainbow.hex).
+
+Development disclosure: this contribution was created by KidCe with assistance
+from OpenAI Codex and is marked accordingly in the Git commit metadata.
+
 ## Quick start — flash it, no toolchain needed
 
 The **latest firmware** is
-[`prebuilt/ws2812_stc8g1k08a_35mhz.hex`](prebuilt/ws2812_stc8g1k08a_35mhz.hex).
+[`prebuilt/ws2812_stc8g1k08a_35mhz_brightness-rainbow.hex`](prebuilt/ws2812_stc8g1k08a_35mhz_brightness-rainbow.hex).
 This is the version with **brightness adjustment** (long press) in addition to
 color switching, and it **remembers your settings across power-off**. It is
 built from the sources in this repo and is byte-for-byte reproducible.
@@ -42,7 +56,7 @@ a few ¥ on Taobao) and a Windows PC (macOS/Linux alternatives below).
 3. In STC-ISP, set **MCU Type** to `STC8G1K08A-8PIN` and select your
    **COM port** (it appears when the CH340 is plugged in; install the CH340
    driver if it doesn't).
-4. Click **Open Code File** and choose `ws2812_stc8g1k08a_35mhz.hex`.
+4. Click **Open Code File** and choose `ws2812_stc8g1k08a_35mhz_brightness-rainbow.hex`.
 5. Set **"Input IRC frequency" to `35.000` MHz.** This is mandatory — all
    WS2812 signal timing in this firmware is derived from that exact clock.
    Leave everything else at defaults (a known-good full settings screenshot
@@ -56,7 +70,7 @@ a few ¥ on Taobao) and a Windows PC (macOS/Linux alternatives below).
 **macOS / Linux:** use the open-source
 [`stcgal`](https://github.com/grigorig/stcgal) or
 [`stc8prog`](https://github.com/IOsetting/stc8prog) instead of STC-ISP, e.g.
-`stcgal -P stc8d -t 35000 prebuilt/ws2812_stc8g1k08a_35mhz.hex`
+`stcgal -P stc8d -t 35000 prebuilt/ws2812_stc8g1k08a_35mhz_brightness-rainbow.hex`
 (`-t 35000` = trim the IRC to 35 MHz — same rule as above).
 
 **Troubleshooting:** if the download never starts, swap TXD/RXD (the most
@@ -73,8 +87,13 @@ power-cycle *after* clicking Download.
   - **Short press** — cycle through 7 colors: red → green → blue → magenta →
     yellow → cyan → white (fires on release, so it never conflicts with a
     long press).
-  - **Long press** (≥ 500 ms) — brightness ramps up smoothly while held; past
-    maximum it wraps back to minimum. Release to stop at the current level.
+  - **Long press** (≥ 500 ms) — brightness ramps smoothly while held. At either
+    limit it stops and the first four LEDs blink twice; release and hold again
+    to ramp in the opposite direction.
+  - **Five fast clicks** — enter a full-brightness moving rainbow. Four fast
+    clicks (two double-clicks) leave it and restore the saved color/brightness.
+    Hold in rainbow mode to increase its speed; release and hold again to
+    decrease it. Animation speed is limited to roughly 8–150 frames/s.
 - **Settings memory** — color and brightness are saved to the on-chip
   EEPROM (IAP) when the button is released and restored at power-up. A magic
   byte validates the data; writes happen only on key release to minimize
@@ -84,8 +103,9 @@ power-cycle *after* clicking Download.
   brightness is consistent across colors. A floor (`MIN_BRIGHT = 8`) keeps
   the strip from ever looking dead; a ceiling (`MAX_BRIGHT`) can cap current
   draw.
-- **Robust key handling** — 3 × 5 ms debounce, clean short/long-press
-  discrimination, ramp step every 15 ms while held.
+- **Robust key handling** — 3 × 5 ms debounce and clean short/long-press
+  discrimination. A 100-step gamma-2.2 curve makes perceived brightness change
+  approximately linearly over a full two-second sweep.
 - **Drives 50 LEDs by default** (`LedNum`, easily changed) in GRB order.
 - **Two toolchains, same behavior**
   - Keil C51 (µVision project included) — the original build.
@@ -228,10 +248,10 @@ Everything tunable lives in the headers (edit the tree you build):
 | `COLOR_NUM` / `color_tab[]` | `ws2812.h` / `ws2812.c` | 7 colors | The palette; keep both in sync. |
 | `DEFAULT_BRIGHT` | `ws2812.h` | 26 (~10 %) | First-boot brightness. |
 | `MIN_BRIGHT` / `MAX_BRIGHT` | `ws2812.h` | 8 / 255 | Ramp floor / ceiling (lower the ceiling to cap current). |
-| `RAMP_STEP` | `ws2812.h` | 2 | Brightness increment per ramp step. |
+| `RAMP_LEVELS` | `ws2812.h` | 100 | Number of gamma-corrected perceptual steps. |
 | `DB_TICKS` | `key.h` | 3 (~15 ms) | Debounce window. |
 | `LONG_TICKS` | `key.h` | 100 (~500 ms) | Long-press threshold. |
-| `RAMP_INTERVAL` | `key.h` | 3 (~15 ms) | Ramp step period while held. |
+| `RAMP_INTERVAL` | `key.h` | 4 (~20 ms) | Ramp period; 100 steps give a ~2 s full sweep. |
 | `EEPROM_ADDR` | `eeprom.h` | 0x0000 | Settings sector (512-byte erase granularity). |
 
 ## Keil vs SDCC builds
@@ -242,7 +262,7 @@ Everything tunable lives in the headers (edit the tree you build):
 | P3.3 drive mode | quasi-bidirectional | **push-pull** (sharper edges, stronger drive) |
 | HSV→RGB helpers | included (`HSVtoRGB`, `SetLedHSVColor`) — unused hooks for effects | omitted (keeps the build under 1 KB) |
 | Flash used | ~2–3 KB | 968 B |
-| Prebuilt hex in this repo | no (build it yourself) | **yes** — `prebuilt/ws2812_stc8g1k08a_35mhz.hex` |
+| Prebuilt hex in this repo | no (build it yourself) | **yes** — `prebuilt/ws2812_stc8g1k08a_35mhz_brightness-rainbow.hex` |
 
 ## Where to buy
 

@@ -11,7 +11,7 @@
 #define MAX_BRIGHT     255   /* Upper limit (lower this to cap current draw) */
 #define DEFAULT_BRIGHT 26    /* ~10%, used on first power-up / invalid EEPROM */
 #define DEFAULT_COLOR  0     /* Default color: red */
-#define RAMP_STEP      2     /* Brightness increment per ramp step while held */
+#define RAMP_LEVELS    100   /* Gamma-corrected perceptual positions, 0..100 */
 
 extern u8 g_bright;      /* Current brightness 0..255 (actual value of each lit channel) */
 extern u8 g_color_idx;   /* Current color index 0..COLOR_NUM-1 */
@@ -24,6 +24,9 @@ void HSVtoRGB(u8 *r, u8 *g, u8 *b, u16 h, u8 s, u8 v);
 
 void ApplyColor(void);   /* Refresh whole strip from g_color_idx + g_bright */
 void NextColor(void);    /* Advance to next color (wraps, never out of range) and refresh */
-void RampBright(void);   /* Long-press ramp: one brightness step (wraps at top) and refresh */
+u8 RampBright(u8 up);    /* Step toward a limit; returns 1 when that limit is reached */
+void BeginBrightRamp(void); /* Match the ramp position to the restored/current value */
+void SignalBrightLimit(void); /* Blink the first four LEDs at a brightness limit */
+void RainbowStep(void); /* Render the next full-brightness rainbow frame */
 
 #endif

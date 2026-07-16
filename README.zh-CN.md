@@ -16,7 +16,7 @@ SP002E 那类三键），单键交互正是这个小设计的独特之处。
 ## 快速开始 —— 直接刷固件，不用装任何编译器
 
 **最新固件**是
-[`prebuilt/ws2812_stc8g1k08a_35mhz.hex`](prebuilt/ws2812_stc8g1k08a_35mhz.hex)。
+[`prebuilt/ws2812_stc8g1k08a_35mhz_brightness-rainbow.hex`](prebuilt/ws2812_stc8g1k08a_35mhz_brightness-rainbow.hex)。
 这是**带亮度调节**（长按）的版本，同时支持颜色切换和**断电记忆**。
 它由本仓库源码编译而来，且可逐字节复现。刷写步骤（纯文字版，不看图也能操作）：
 
@@ -35,7 +35,7 @@ Windows 电脑（macOS/Linux 方案见下）。
    `stc-isp-xxx.exe`，无需安装。
 3. 在 STC-ISP 里"芯片型号"选 `STC8G1K08A-8PIN`，"串口号"选 CH340 对应的
    COM 口（插上模块就会出现；没有就先装 CH340 驱动）。
-4. 点"打开程序文件"，选 `ws2812_stc8g1k08a_35mhz.hex`。
+4. 点"打开程序文件"，选 `ws2812_stc8g1k08a_35mhz_brightness-rainbow.hex`。
 5. **"输入用户程序运行时的IRC频率"必须填 `35.000` MHz** —— 固件里所有
    WS2812 时序都由这个频率推算，填错灯就不亮或乱闪。其余选项保持默认即可
    （完整的已验证设置截图见
@@ -47,7 +47,7 @@ Windows 电脑（macOS/Linux 方案见下）。
 **macOS / Linux：** 用开源的
 [`stcgal`](https://github.com/grigorig/stcgal) 或
 [`stc8prog`](https://github.com/IOsetting/stc8prog) 替代 STC-ISP，例如
-`stcgal -P stc8d -t 35000 prebuilt/ws2812_stc8g1k08a_35mhz.hex`
+`stcgal -P stc8d -t 35000 prebuilt/ws2812_stc8g1k08a_35mhz_brightness-rainbow.hex`
 （`-t 35000` 即把 IRC 调到 35 MHz，规则同上）。
 
 **排障：** 下载一直没反应时——先对调 TXD/RXD（最常见的错），确认 CH340
@@ -201,7 +201,7 @@ STC-ISP 设置、同样必须 35.000 MHz。
 | P3.3 驱动模式 | 准双向 | **推挽**（边沿更陡、驱动更强） |
 | HSV→RGB 辅助函数 | 有（未使用的扩展钩子） | 无（保持 1 KB 以内） |
 | Flash 占用 | 约 2–3 KB | 968 字节 |
-| 本仓库是否附预编译 hex | 无（需自行编译） | **有** —— `prebuilt/ws2812_stc8g1k08a_35mhz.hex` |
+| 本仓库是否附预编译 hex | 无（需自行编译） | **有** —— `prebuilt/ws2812_stc8g1k08a_35mhz_brightness-rainbow.hex` |
 
 ## 购买渠道（2026 年 7 月核对，价格仅供参考）
 
